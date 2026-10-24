@@ -343,8 +343,78 @@ input[type="checkbox"] {
   color: var(--muted);
   white-space: pre-wrap;
 }
-.usage-text {
+.usage-content {
+  white-space: normal;
+}
+.usage-list {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0;
+  display: grid;
+  gap: 1rem;
+}
+.usage-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  padding: 1.1rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.usage-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 1.8rem;
+  min-height: 1.8rem;
+  border-radius: 6px;
+  background: var(--soft);
+  color: var(--blue);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.usage-item-content {
+  min-width: 0;
+  flex: 1;
+}
+.usage-heading {
+  font-size: 1.05rem;
+  font-weight: 650;
+  line-height: 1.7;
+  margin: 0 0 0.55rem;
   white-space: pre-wrap;
+}
+.detail-section .usage-description,
+.detail-section .usage-intro {
+  line-height: 1.95;
+  white-space: pre-wrap;
+  margin: 0;
+}
+.detail-section .usage-intro {
+  margin: 0.8rem 0;
+}
+.usage-example {
+  margin: 0.85rem 0 0;
+  padding: 0.7rem 0.85rem;
+  border-left: 3px solid var(--blue);
+  background: var(--soft);
+  border-radius: 0 6px 6px 0;
+}
+.usage-example-label {
+  color: var(--blue);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.detail-section .usage-example p {
+  line-height: 1.9;
+  margin: 0.25rem 0 0;
+  white-space: pre-wrap;
+}
+@media (max-width: 640px) {
+  .usage-item {
+    padding: 0.85rem 0.65rem;
+    gap: 0.55rem;
+  }
 }
 .detail-section {
   border-top: 1px solid var(--line);

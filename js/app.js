@@ -11,8 +11,7 @@ import {
 import { search } from "./search.js";
 import { parseBackup, previewImport, MAX_BYTES } from "./backup.js";
 import { makePrompt, parseAI } from "./ai.js";
-import { el, button, toast, copy } from "./ui.js";
-import { formatUsage } from "./text.js";
+import { el, button, toast, copy, renderUsage } from "./ui.js";
 const $ = (s) => document.querySelector(s),
   form = $("#entry-form"),
   editor = $("#editor"),
@@ -406,10 +405,7 @@ function renderDetail(e) {
     );
     n.append(row);
   }
-  if (e.usage)
-    section("基本用法 · USAGE").append(
-      el("p", formatUsage(e.usage), "usage-text"),
-    );
+  if (e.usage) section("基本用法 · USAGE").append(renderUsage(e.usage));
   if (e.collocations.length) {
     const n = section("常見搭配 · COLLOCATIONS");
     e.collocations.forEach((x) => copyLine(n, x));
