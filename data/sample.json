@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "exportedAt": "2026-10-24T04:13:48.196Z",
+  "entries": [
+    {
+      "id": "4f8090b2-20b7-43fe-a924-6e06b8205a44",
+      "word": "mitigate",
+      "wordNormalized": "mitigate",
+      "type": "word",
+      "definition": "To make something less severe.",
+      "usage": "用於降低風險、影響或問題的嚴重程度。",
+      "originalContext": "",
+      "partOfSpeech": [
+        "verb"
+      ],
+      "translations": [
+        "減輕",
+        "緩解"
+      ],
+      "collocations": [
+        "mitigate potential risks"
+      ],
+      "tags": [
+        "Academic Writing"
+      ],
+      "sections": [
+        "Discussion"
+      ],
+      "academicExamples": [
+        {
+          "en": "Careful validation can mitigate the risk of data loss.",
+          "zh": "仔細驗證可以降低資料遺失的風險。"
+        }
+      ],
+      "synonyms": [
+        {
+          "word": "alleviate",
+          "difference": "偏向緩解痛苦與不良情況。"
+        }
+      ],
+      "source": {
+        "title": "",
+        "doi": "",
+        "url": ""
+      },
+      "favorite": false,
+      "familiarity": 0,
+      "createdAt": "2026-10-24T04:13:48.205Z",
+      "updatedAt": "2026-10-24T04:13:48.205Z"
+    }
+  ]
+}

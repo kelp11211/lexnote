@@ -1,2 +1,103 @@
-# lexnote
-A lightweight, local-first academic vocabulary notebook for reading research papers and improving academic writing.
+# Lexnote · Academic Vocabulary Notebook
+
+我的學術英文單字庫。給閱讀論文、累積詞彙與寫作表達的研究者使用。繁體中文介面、IndexedDB 本機資料庫、HTML5、原生 JavaScript ES Modules、已編譯 Tailwind CSS，日常使用不需要 Node.js、API Key 或外部網路。
+
+## Windows 啟動
+
+1. 安裝 [Python 3](https://www.python.org/downloads/)，勾選 **Add Python to PATH**，執行 `python --version` 或 `py -3 --version` 驗證。
+2. 雙擊 `start.bat`，會依序偵測 `py -3`、`python`、新版 Python 管理器的本機路徑，先啟動服務再開啟瀏覽器。
+3. 固定使用 **http://localhost:8765**，建議 Chrome 或 Edge。使用期間保持命令視窗開啟，按 `Ctrl+C` 停止服務。
+
+也可在根目錄執行 `py -3 serve.py` 或 `python serve.py`。啟動器只使用 Python 標準函式庫，於 `127.0.0.1:8765` 提供靜態內容，沒有應用 API。埠被占用會提示錯誤、不改埠；若原服務是 Lexnote，開啟原網址即可，否則先停止占用程式。
+
+請勿直接雙擊 index.html。IndexedDB 以 origin（協定、主機、埠）隔離：換成 127.0.0.1、HTTPS 或不同埠會讀到另一個詞庫。不同瀏覽器或設定檔也各自儲存資料。
+
+## 使用方式
+
+- **快速新增**：填英文與類型即可儲存。中文每行一項，標籤以逗號分隔。同類型、同正規化詞彙會提示開啟既有紀錄，不建立大小寫重複資料。
+- **完整編輯**：展開後可填詞性、定義、用法、多筆搭配詞、英文／中文例句、同義詞差異、來源、章節、收藏、熟悉程度。搭配詞、例句與同義詞可逐筆新增或移除。失敗保留表單，取消更動先確認。
+- **搜尋**：可查英文、中文、定義、用法、搭配詞、例句、同義詞、標籤及原文。類型、標籤、章節、收藏採交集篩選，可依新增、更新、A–Z 排序。
+- **詳情**：點選詞彙查看，搭配詞與例句可複製。來源網址僅接受 HTTP(S)。窄螢幕選取後切換詳情，按「返回清單」返回。
+- **外觀**：首次跟隨系統主題，切換後將選擇儲存於 settings，之後優先使用個人設定。
+
+## ChatGPT 半自動流程
+
+1. 在新增／編輯表單填入英文、類型與原文情境，可選填研究領域。
+2. 按「產生 AI 提示詞」，複製並手動貼到 ChatGPT。
+3. 將回覆貼入「貼回 AI 結果」，按「驗證並預覽」。接受單一 Markdown JSON fence。
+4. 比對「目前紀錄」與「AI 建議」，勾選採用的欄位；既有非空欄位預設不勾選，空欄位預設勾選。
+5. 套用到表單後可修改，最後按「儲存詞彙」才寫入資料庫。
+
+AI 只能建議詞性、翻譯、定義、用法、搭配詞、例句、同義詞、章節、標籤，不能改 ID、來源、原文、收藏或時間。詞彙、類型不符或資料錯誤會拒絕。提示詞要求原創示例、不杜撰文獻。程式不自動連接 AI 或傳送原文；只有你手動貼到 ChatGPT 的內容才送出。
+
+## JSON 備份與還原
+
+「資料管理 → 匯出全部 JSON」下載 `vocabulary_backup_YYYY-MM-DD.json`，包含全部詞彙、schemaVersion 1、exportedAt，不受篩選影響。**不含 UI 偏好與上次匯出紀錄**。程式只能確認啟動下載，請自行確認檔案留在磁碟。超過 7 天顯示非阻擋提醒。
+
+- **合併匯入**：預覽總數、新增、重複 ID、詞彙衝突與錯誤。同 ID 或同類型／同正規化詞彙一律保留本機、跳過匯入，結果顯示寫入與跳過筆數。要更新既有資料請編輯表單，或備份後使用全部取代。
+- **全部取代還原**：先匯出目前資料，驗證全檔成功後才允許取代，且須再次確認。清空與寫入在單一 transaction，失敗整筆回復。空 entries 也會清空，確認畫面顯示 0 筆。
+- 檔案內重複 ID／詞彙、錯誤欄位、未支援版本都拒絕整份，不寫入部分內容。
+
+限制：檔案最多 10 MB、10,000 筆；詞彙 500 字元；一般文字欄位 20,000 字元；每個陣列 200 項；AI 貼入內容 100,000 字元。`data/sample.json` 僅供自行匯入，首次開啟不載入示範資料。
+
+IndexedDB 不是備份。清除網站資料、無痕模式結束、瀏覽器移除或儲存空間回收都可能使資料消失。請每週及大量修改前匯出，另存至自己的備份空間；排除資料庫錯誤時不要先清除網站資料。
+
+## 快捷鍵
+
+| 快捷鍵 | 功能 |
+| --- | --- |
+| Ctrl + K | 主畫面聚焦搜尋 |
+| Ctrl + Shift + N | 主畫面新增；若瀏覽器優先開無痕視窗，改用新增按鈕 |
+| Ctrl + S | 僅編輯表單開啟、無其他視窗覆蓋時儲存 |
+| Esc | 關閉最上層視窗；未儲存更動先確認 |
+| Ctrl + Shift + E | 主畫面匯出；若瀏覽器攔截，改用資料管理 |
+
+## 開發與驗證
+
+日常使用不需要 Node.js。修改樣式與執行測試時，安裝 Node.js 22 以上：
+
+```powershell
+npm ci
+npm run build
+npm test
+```
+
+Tailwind 3 將 css/input.css 編譯至 css/style.css，所有資源來自本機，沒有 CDN。鎖定 postcss-selector-parser 修正版排除已知效能漏洞，並實際驗證樣式建置相容性。
+
+Node test runner 搭配 fake-indexeddb 測試 schema、搜尋、AI 保護、備份與衝突，以及 CRUD、唯一鍵、合併、取代、失敗回復。瀏覽器驗收與尚待確認項目見 [tests/ACCEPTANCE.md](tests/ACCEPTANCE.md)。模擬資料庫無法完全代替真實磁碟故障或儲存空間不足測試。
+
+## 檔案結構
+
+```text
+lexnote/
+├── index.html
+├── start.bat / serve.py
+├── package.json / package-lock.json / tailwind.config.js
+├── README.md / prompt.md
+├── css/
+│   ├── input.css
+│   └── style.css
+├── js/
+│   ├── app.js       # 狀態、表單、介面、事件
+│   ├── ui.js        # 安全 DOM、複製、通知
+│   ├── db.js        # IndexedDB、唯一索引與交易
+│   ├── schema.js    # 驗證與正規化
+│   ├── search.js    # 搜尋、篩選、排序
+│   ├── ai.js        # 提示詞與 AI JSON
+│   └── backup.js    # 備份解析與衝突預覽
+├── data/sample.json
+└── tests/
+    ├── core.test.js
+    ├── db.test.js
+    └── ACCEPTANCE.md
+```
+
+## 決策與已知限制
+
+- CRUD 集中於 db.js，避免多一層空泛 wrapper。資料庫版本 1，migration 保留於 onupgradeneeded；entries 有複合唯一索引，防止分頁同時新增重複詞彙。交易完成後才回報成功。
+- 匯入預覽後，寫入交易會重新讀取本機資料判斷衝突。多分頁同時編輯同一 ID 目前採最後儲存為準，建議避免同時編輯同筆紀錄。
+- 搜尋資料放在記憶體，輸入延遲 180ms，適合幾千筆。未實作大量詞庫虛擬清單或全文索引。
+- 本機功能可離線，靜態服務仍須運作。ChatGPT 使用需要網路；沒有 AI API、雲端同步、發音、登入或正式間隔複習。
+- 僅支援 schemaVersion 1 的已知欄位，自訂擴充欄位不保留。來源網址、UUID 與欄位型別會驗證。
+- 搜尋篩選不跨啟動保存；主題保存在 IndexedDB。
+- 未來可擴充發音、寫作分類、複習排程。雲端同步與 AI API 應另行設計權限與備份。

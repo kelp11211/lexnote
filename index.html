@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Lexnote · Academic Vocabulary Notebook</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <script type="module" src="js/app.js"></script>
+  </head>
+  <body>
+    <div class="shell">
+      <header>
+        <a class="brand" href="./"
+          ><span class="logo">L<span>·</span></span
+          ><span
+            ><strong>Academic Vocabulary Notebook</strong
+            ><small>我的學術英文單字庫</small></span
+          ></a
+        >
+        <div class="toolbar">
+          <button id="theme">切換深色</button
+          ><button id="manage">資料管理</button
+          ><button id="new" class="primary" disabled>＋ 新增詞彙</button>
+        </div>
+      </header>
+      <section class="intro">
+        <div>
+          <p class="eyebrow">YOUR RESEARCH, IN WORDS</p>
+          <h1>讓每一次閱讀，累積成寫作的底氣。</h1>
+          <p class="muted">收集詞彙、理解語境，建立屬於你的學術表達。</p>
+        </div>
+        <span class="local-badge">● 僅儲存於此瀏覽器</span>
+      </section>
+      <main>
+        <section class="search-panel">
+          <label class="sr-only" for="search">搜尋詞彙</label
+          ><input
+            id="search"
+            type="search"
+            placeholder="搜尋英文、中文、例句、標籤…　Ctrl K"
+          />
+          <div class="filters">
+            <label
+              >類型<select id="type">
+                <option value="">全部類型</option>
+                <option value="word">單字</option>
+                <option value="phrase">片語</option>
+                <option value="pattern">句型</option>
+              </select></label
+            ><label
+              >標籤<select id="tag">
+                <option value="">全部標籤</option>
+              </select></label
+            ><label
+              >論文章節<select id="section">
+                <option value="">全部章節</option>
+              </select></label
+            ><label class="check"
+              ><input type="checkbox" id="favorite" />只看收藏</label
+            ><label
+              >排序<select id="sort">
+                <option value="created">最近新增</option>
+                <option value="updated">最近更新</option>
+                <option value="alpha">英文 A–Z</option>
+              </select></label
+            ><button id="reset" class="quiet">清除篩選</button>
+          </div>
+        </section>
+        <div class="workspace">
+          <section class="list-panel" aria-label="詞彙清單">
+            <div class="panel-head">
+              <h2>我的詞彙</h2>
+              <span id="count">載入中…</span>
+            </div>
+            <div id="list"></div>
+          </section>
+          <section
+            id="detail"
+            class="detail-panel"
+            aria-label="詞彙詳情"
+          ></section>
+        </div>
+      </main>
+      <footer>
+        <span id="db-status" role="status">正在開啟本機資料庫…</span
+        ><span id="backup-status">請定期匯出 JSON 備份</span>
+      </footer>
+    </div>
+    <div id="toast" role="status" aria-live="polite"></div>
+    <dialog id="editor" aria-labelledby="editor-title">
+      <form id="entry-form">
+        <div class="dialog-head">
+          <div>
+            <p class="eyebrow">BUILD YOUR VOCABULARY</p>
+            <h2 id="editor-title">新增詞彙</h2>
+          </div>
+          <button type="button" id="cancel" aria-label="關閉編輯">✕</button>
+        </div>
+        <div class="dialog-body">
+          <div class="grid-two">
+            <label
+              >英文詞彙 *<input name="word" required maxlength="500" /><span
+                id="word-error"
+                class="error"
+              ></span></label
+            ><label
+              >類型 *<select name="type">
+                <option value="word">單字 Word</option>
+                <option value="phrase">片語 Phrase</option>
+                <option value="pattern">句型 Pattern</option>
+              </select></label
+            >
+          </div>
+          <label
+            >中文意思（每行一項）<textarea
+              name="translations"
+              rows="2"
+            ></textarea></label
+          ><label
+            >標籤（以逗號分隔）<input
+              name="tags"
+              placeholder="Security, Academic Writing" /></label
+          ><label
+            >原文情境<textarea
+              name="originalContext"
+              rows="3"
+              placeholder="貼上論文中的原始句子"
+            ></textarea>
+          </label>
+          <details id="full-edit">
+            <summary>完整編輯 · 定義、例句、來源與分類</summary>
+            <label>詞性（逗號分隔）<input name="partOfSpeech" /></label
+            ><label>英文定義<textarea name="definition"></textarea></label
+            ><label>基本用法<textarea name="usage"></textarea></label>
+            <div class="repeater-head">
+              常見搭配詞<button type="button" id="add-collocation">
+                ＋ 新增搭配詞
+              </button>
+            </div>
+            <div id="collocations-fields"></div>
+            <div class="repeater-head">
+              學術例句<button type="button" id="add-example">
+                ＋ 新增例句
+              </button>
+            </div>
+            <div id="examples-fields"></div>
+            <div class="repeater-head">
+              同義詞比較<button type="button" id="add-synonym">
+                ＋ 新增同義詞
+              </button>
+            </div>
+            <div id="synonyms-fields"></div>
+            <label>來源論文<input name="sourceTitle" /></label>
+            <div class="grid-two">
+              <label>DOI<input name="sourceDoi" /></label
+              ><label
+                >來源網址<input
+                  name="sourceUrl"
+                  type="url"
+                  placeholder="https://…"
+              /></label>
+            </div>
+            <fieldset>
+              <legend>適用論文章節</legend>
+              <div id="section-checks" class="section-checks"></div>
+            </fieldset>
+            <div class="grid-two">
+              <label
+                >熟悉程度<select name="familiarity">
+                  <option value="0">0 · 尚未熟悉</option>
+                  <option value="1">1 · 有印象</option>
+                  <option value="2">2 · 能理解</option>
+                  <option value="3">3 · 能運用</option>
+                </select></label
+              ><label class="check"
+                ><input name="favorite" type="checkbox" />收藏此詞彙</label
+              >
+            </div>
+          </details>
+          <section class="ai-box">
+            <h3>ChatGPT 寫作助手</h3>
+            <p class="muted">
+              產生提示詞 → 貼到 ChatGPT → 貼回 JSON → 預覽後套用
+            </p>
+            <label
+              >研究領域（選填）<input
+                id="domain"
+                placeholder="例如：Computer Science"
+            /></label>
+            <div class="toolbar">
+              <button type="button" id="prompt">產生 AI 提示詞</button
+              ><button type="button" id="ai-import">貼回 AI 結果</button>
+            </div>
+          </section>
+          <p id="form-error" class="error" role="alert"></p>
+        </div>
+        <div class="dialog-foot">
+          <span class="muted">* 必填，其餘可稍後補齊</span
+          ><button type="submit" class="primary" id="save">儲存詞彙</button>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="aux" aria-labelledby="aux-title">
+      <div class="dialog-head">
+        <h2 id="aux-title"></h2>
+        <button id="aux-close" aria-label="關閉視窗">✕</button>
+      </div>
+      <div class="dialog-body" id="aux-body"></div>
+    </dialog>
+  </body>
+</html>
