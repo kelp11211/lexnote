@@ -53,6 +53,34 @@ const fields = [
   "favorite",
 ];
 const field = (k) => form.elements.namedItem(k);
+const fontSizes = {
+  sm: "16px",
+  md: "18.66666667px",
+  lg: "21.33333333px",
+  xl: "24px",
+};
+let fontSize = "md";
+function applyFontSize(value) {
+  fontSize = Object.hasOwn(fontSizes, value) ? value : "md";
+  document.documentElement.style.fontSize = fontSizes[fontSize];
+  $("#font-size").value = fontSize;
+}
+$("#font-size").onchange = guard(async () => {
+  const previous = fontSize;
+  const next = $("#font-size").value;
+  if (!Object.hasOwn(fontSizes, next)) return;
+  applyFontSize(next);
+  $("#font-size").disabled = true;
+  try {
+    await setValue("settings", "fontSize", next);
+    toast("已儲存字級設定");
+  } catch (e) {
+    applyFontSize(previous);
+    throw e;
+  } finally {
+    $("#font-size").disabled = false;
+  }
+});
 function ask(message) {
   return new Promise((resolve) => {
     const dialog = el("dialog");
@@ -754,7 +782,9 @@ try {
   entries = await allEntries();
   themePreference = await getValue("settings", "theme");
   if (themePreference) applyTheme(themePreference);
+  applyFontSize(await getValue("settings", "fontSize"));
   ready = true;
+  $("#font-size").disabled = false;
   $("#new").disabled = false;
   $("#db-status").textContent = "● IndexedDB 已就緒 · 所有更動儲存於本機";
   render();
