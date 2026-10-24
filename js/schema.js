@@ -11,6 +11,7 @@ export const SECTIONS = [
 ];
 export const normalize = (s) => s.trim().replace(/\s+/g, " ").toLowerCase();
 export const AI_FIELDS = [
+  "phonetic",
   "partOfSpeech",
   "translations",
   "definition",
@@ -19,7 +20,6 @@ export const AI_FIELDS = [
   "academicExamples",
   "synonyms",
   "sections",
-  "tags",
 ];
 const fail = (m) => {
   throw new Error(m);
@@ -60,16 +60,14 @@ export function validateEntry(v, { external = false } = {}) {
   )
     fail("id 必須是有效 UUID");
   const out = { id, word, wordNormalized: normalize(word), type: v.type };
-  for (const k of ["definition", "usage", "originalContext"])
+  for (const k of ["phonetic", "definition", "usage", "originalContext"])
     out[k] = str(v[k], k);
-  for (const k of [
-    "partOfSpeech",
-    "translations",
-    "collocations",
-    "tags",
-    "sections",
-  ])
+  for (const k of ["partOfSpeech", "translations", "collocations", "sections"])
     out[k] = [...new Set(arr(v[k], k).filter(Boolean))];
+  // Legacy backup compatibility only: never create tags on new records.
+  // Existing metadata survives editing/export without remaining an app feature.
+  if (Object.hasOwn(v, "tags"))
+    out.tags = [...new Set(arr(v.tags, "舊版 tags").filter(Boolean))];
   if (out.sections.some((x) => !SECTIONS.includes(x)))
     fail("sections 含不支援的論文章節");
   out.academicExamples = arr(v.academicExamples, "academicExamples", (x) => {

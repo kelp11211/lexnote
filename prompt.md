@@ -26,14 +26,14 @@
 
 - 使用者在 Windows 上閱讀英文論文，遇到 `mitigate`、`heterogeneous` 等詞，想快速記錄、理解中文意思與基本用法。
 - 使用者遇到 `in contrast to` 或 `the experimental results demonstrate that` 等實用寫作表達，想留待日後論文撰寫使用。
-- 使用者希望能依英文、中文、研究領域、標籤、論文章節搜尋筆記，查看原始論文情境、學術例句及常見搭配詞。
+- 使用者希望能依英文、中文及論文章節查找筆記，查看原始論文情境、學術例句及常見搭配詞。
 - 使用者主要在自己的 Windows 電腦操作，不需要多裝置同步或雲端帳號；仍需要 JSON 備份與可攜性。
 
 ### 1.2 第一版核心目標（MVP）
 
 - 快速新增、查看、編輯、刪除單字／片語／學術句型。
 - 持久化本機資料；重新整理、關閉並再開啟瀏覽器後仍保留內容。
-- 中文、英文、例句與標籤搜尋；收藏、分類與論文章節篩選。
+- 中文、英文與例句搜尋；類型、收藏與論文章節篩選。
 - 半自動 AI 提示詞與結果匯入。
 - JSON 完整備份、驗證、合併匯入及確認後取代還原。
 - 好看的桌面雙欄版型，兼顧窄螢幕，支援淺色／深色模式。
@@ -137,8 +137,8 @@ AcademicVocabulary/
 ┌────────────────────────────────────────────────────────────────────────┐
 │  📖 Academic Vocabulary Notebook            [淺/深模式] [資料管理]  [+新增] │
 ├────────────────────────────────────────────────────────────────────────┤
-│  [搜尋英文、中文、例句、標籤.........................................] │
-│  [全部/單字/片語/句型] [分類] [論文章節] [☆收藏] [排序]                │
+│  [搜尋英文、中文、例句..............................................] │
+│  [全部/單字/片語/句型] [論文章節] [☆收藏] [排序]                       │
 ├────────────────────────────┬───────────────────────────────────────────┤
 │ 單字清單                    │ 詞彙詳情                                   │
 │                            │                                           │
@@ -164,9 +164,9 @@ AcademicVocabulary/
 
 以簡化的表單為主，區分：
 
-**快速新增**：英文詞彙（必填）、類型（必填）、中文意思（選填）、標籤（選填）、原文情境（選填）。只輸入詞彙與類型也能儲存。
+**快速新增**：英文詞彙（必填）、類型（必填）、中文意思（選填）、原文情境（選填）。只輸入詞彙與類型也能儲存。
 
-**完整編輯**：翻譯、詞性、定義、基本用法、Collocations、Academic Examples（英文＋中文）、Synonyms、來源論文、分類、適用章節、收藏、熟悉程度。
+**完整編輯**：音標、翻譯、詞性、定義、基本用法、Collocations、Academic Examples（英文＋中文）、Synonyms、來源論文、適用章節、收藏、熟悉程度。
 
 - 使用明確的儲存、取消按鈕；未儲存更動時離開，須提醒。
 - 長文字欄位使用 textarea；多筆例句與搭配詞能新增／刪除項目。
@@ -237,7 +237,6 @@ AcademicVocabulary/
     "doi": "",
     "url": ""
   },
-  "tags": ["Security", "Academic Writing"],
   "sections": ["Introduction", "Discussion"],
   "favorite": false,
   "familiarity": 0,
@@ -262,7 +261,7 @@ AcademicVocabulary/
 | `synonyms` | object[] | 元素為 `{word, difference}`，可為空 |
 | `originalContext` | string | 原始論文中的句子，不自動虛構 |
 | `source` | object | `{title, doi, url}`；選填 |
-| `tags` / `sections` | string[] | 可為空；重複標籤合併 |
+| `sections` | string[] | 可為空；重複章節合併 |
 | `favorite` | boolean | 預設 `false` |
 | `familiarity` | integer | 0 至 3，預設 0 |
 | `createdAt` / `updatedAt` | string | ISO 8601；新增／更新時自動維護 |
@@ -296,15 +295,15 @@ AcademicVocabulary/
 ### M02｜搜尋與篩選
 
 - 搜尋欄輸入時即時過濾（可 debounce 約 150–250ms）。
-- 不區分英文大小寫；搜尋 `word`、`translations`、`definition`、`usage`、`collocations`、`academicExamples.en/zh`、`synonyms.word`、`tags`，也可搜尋 `originalContext`。
-- 篩選類型（全部／Word／Phrase／Pattern）、標籤、論文章節、收藏狀態。
+- 不區分英文大小寫；搜尋 `word`、`translations`、`definition`、`usage`、`collocations`、`academicExamples.en/zh`、`synonyms.word`，也可搜尋 `originalContext`。
+- 篩選類型（全部／Word／Phrase／Pattern）、論文章節、收藏狀態。
 - 排序：最近新增（預設）、最近更新、英文字母 A–Z。
 - 搜尋結果顯示筆數；沒有結果時顯示清楚空狀態與「清除篩選」操作。
 - 第一版預期幾千筆以內，可載入至記憶體後進行本機篩選；若資料增加再評估全文索引。
 
 ### M03｜詞彙詳情
 
-- 顯示主詞、類型、詞性、中譯、英文定義、用法、Collocations、學術例句、同義詞差異、原始句子、來源、標籤與論文章節。
+- 顯示主詞、音標、類型、詞性、中譯、英文定義、用法、Collocations、學術例句、同義詞差異、原始句子、來源與論文章節。
 - 每個例句或片語提供複製按鈕；使用 Clipboard API，失敗時給明確提示。
 - 無內容的區塊可隱藏或顯示精簡提示，不必堆滿空欄位。
 - 若 `source.url` 有值，經過協定與格式驗證後才能產生安全連結；不允許 `javascript:` 等危險協定。
@@ -324,7 +323,7 @@ AcademicVocabulary/
 
 - 回覆只包含**有效 JSON 物件**，不要 Markdown fences 或額外說明。
 - 使用繁體中文（台灣用語），適用於學術英文閱讀與寫作。
-- 提供 `word`、`type`、`partOfSpeech`、`translations`、`definition`、`usage`、`collocations`、`academicExamples`、`synonyms`、`sections`、`tags`。
+- 提供 `word`、`type`、`phonetic`（IPA 音標）、`partOfSpeech`、`translations`、`definition`、`usage`、`collocations`、`academicExamples`、`synonyms`、`sections`。
 - 學術例句需為原創示例；不要杜撰文獻、DOI、實驗數字或研究結論。
 - 如果原始句子的意思與常見詞義不同，須根據情境解釋；不確定時不要裝作確定。
 - 若原始句子由使用者提供，原文應保留在本機現有紀錄的 `originalContext`，AI 不應修改使用者的來源資訊。
@@ -337,12 +336,12 @@ AcademicVocabulary/
 - 可容忍外層以 Markdown ```json 包住的輸出，但必須安全剝除外層 fence，不能藉此執行程式碼。
 - 不要使用 `eval()`；不要任意注入 HTML。
 
-### M05｜標籤、收藏與寫作分類
+### M05｜收藏與論文章節
 
-- 提供可自由輸入的標籤（例如 `Security`、`Computer Science`、`Research Method`、`Academic Writing`）。
+- 不提供標籤功能，也不在 AI 提示詞中要求標籤；AI 回覆中的舊版 `tags` 不套用。
 - `sections` 可選：`Abstract`、`Introduction`、`Related Work`、`Methodology`、`Evaluation`、`Results`、`Discussion`、`Conclusion`、`General`。
-- 第一版可以把「適合用於論文寫作」以 `Academic Writing` 標籤呈現；保留未來引入 Learning / Writing 分類的擴充空間，不額外增加複雜狀態機。
-- 常用標籤可依目前紀錄自動整理為篩選選項。
+- 使用收藏及適用章節整理寫作素材，不另外新增分類狀態。
+- 舊詞彙或備份若含 `tags`，僅保留為隱藏相容資料，不參與顯示、搜尋、篩選或 AI 套用；新詞彙不建立此欄位。
 
 ### M06｜JSON 備份、還原與資料保護
 
@@ -391,7 +390,7 @@ AcademicVocabulary/
 ### Phase 2：資料與 CRUD
 
 - 建立 IndexedDB 與 `entries`、`settings`、`metadata`。
-- 新增、編輯、刪除、收藏、搜尋、排序、標籤及章節篩選。
+- 新增、編輯、刪除、收藏、搜尋、排序及章節篩選。
 - 實作資料驗證、重複判斷、失敗復原與 UI 狀態更新。
 
 ### Phase 3：AI 半自動流程
@@ -416,7 +415,7 @@ AcademicVocabulary/
 | T02 | 已有 `mitigate`，再新增 `MITIGATE` | 提示重複，不新增第二筆同類型紀錄 |
 | T03 | 搜尋「減輕」 | 可找到 `mitigate` |
 | T04 | 搜尋英文搭配詞或例句片段 | 可找出對應紀錄 |
-| T05 | 編輯翻譯與標籤後返回清單 | 內容更新，搜尋結果一致 |
+| T05 | 編輯翻譯與適用章節後返回清單 | 內容更新，搜尋結果一致 |
 | T06 | 刪除時按取消 | 原資料保留 |
 | T07 | 匯入合法 AI JSON | 可預覽欄位，確認後正確儲存 |
 | T08 | 匯入不合法 JSON | 有清楚錯誤，不寫入資料 |

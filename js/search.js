@@ -5,7 +5,6 @@ export function search(entries, f = {}) {
     .filter(
       (e) =>
         (!f.type || e.type === f.type) &&
-        (!f.tag || e.tags.includes(f.tag)) &&
         (!f.section || e.sections.includes(f.section)) &&
         (!f.favorite || e.favorite) &&
         (!q ||
@@ -18,7 +17,6 @@ export function search(entries, f = {}) {
               ...e.collocations,
               ...e.academicExamples.flatMap((x) => [x.en, x.zh]),
               ...e.synonyms.map((x) => x.word),
-              ...e.tags,
               e.originalContext,
             ].join(" "),
           ).includes(q)),

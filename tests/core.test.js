@@ -9,21 +9,21 @@ const entry = () =>
     word: "mitigate",
     type: "word",
     translations: ["減輕"],
-    tags: ["Security"],
     collocations: ["mitigate risks"],
     academicExamples: [
       { en: "We mitigate potential risks.", zh: "我們降低潛在風險。" },
     ],
   });
-test("quick entry defaults, normalization, deduplicated tags", () => {
+test("quick entry defaults, normalization, deduplicated sections", () => {
   const e = validateEntry({
     word: "  In   Contrast To ",
     type: "phrase",
-    tags: ["x", "x", ""],
+    sections: ["Discussion", "Discussion", ""],
   });
   assert.equal(e.wordNormalized, "in contrast to");
   assert.equal(e.favorite, false);
-  assert.deepEqual(e.tags, ["x"]);
+  assert.deepEqual(e.sections, ["Discussion"]);
+  assert.equal(Object.hasOwn(e, "tags"), false);
   assert.equal(normalize("MITIGATE"), "mitigate");
 });
 test("reject invalid types, blank words, oversized content, URLs, familiarity, dates, IDs", () => {
@@ -46,11 +46,10 @@ test("reject invalid types, blank words, oversized content, URLs, familiarity, d
 });
 test("search translations, examples, collocations; combined filters and sorting", () => {
   const e = entry();
-  for (const q of ["減輕", "MITIGATE RISKS", "潛在風險", "security"])
+  for (const q of ["減輕", "MITIGATE RISKS", "潛在風險"])
     assert.equal(search([e], { q }).length, 1);
   assert.equal(search([e], { favorite: true }).length, 0);
   assert.equal(search([e], { type: "phrase" }).length, 0);
-  assert.equal(search([e], { tag: "Security" }).length, 1);
   assert.equal(search([e], { section: "Discussion" }).length, 0);
   const a = validateEntry({ word: "alpha", type: "word" });
   assert.equal(search([e, a], { sort: "alpha" })[0].word, "alpha");

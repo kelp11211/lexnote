@@ -38,7 +38,7 @@
           ><input
             id="search"
             type="search"
-            placeholder="搜尋英文、中文、例句、標籤…　Ctrl K"
+            placeholder="搜尋英文、中文、例句…　Ctrl K"
           />
           <div class="filters">
             <label
@@ -47,10 +47,6 @@
                 <option value="word">單字</option>
                 <option value="phrase">片語</option>
                 <option value="pattern">句型</option>
-              </select></label
-            ><label
-              >標籤<select id="tag">
-                <option value="">全部標籤</option>
               </select></label
             ><label
               >論文章節<select id="section">
@@ -118,10 +114,6 @@
               rows="2"
             ></textarea></label
           ><label
-            >標籤（以逗號分隔）<input
-              name="tags"
-              placeholder="Security, Academic Writing" /></label
-          ><label
             >原文情境<textarea
               name="originalContext"
               rows="3"
@@ -129,7 +121,12 @@
             ></textarea>
           </label>
           <details id="full-edit">
-            <summary>完整編輯 · 定義、例句、來源與分類</summary>
+            <summary>完整編輯 · 定義、例句、來源與章節</summary>
+            <label
+              >音標（IPA，可註明美式／英式）<input
+                name="phonetic"
+                placeholder="可手動填入，或使用 AI 建議補上"
+            /></label>
             <label>詞性（逗號分隔）<input name="partOfSpeech" /></label
             ><label>英文定義<textarea name="definition"></textarea></label
             ><label>基本用法<textarea name="usage"></textarea></label>

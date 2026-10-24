@@ -320,6 +320,15 @@ input[type="checkbox"] {
   font-size: 18px;
   margin: 12px 0;
 }
+.phonetic {
+  font-family: "Segoe UI", "Arial", sans-serif;
+  font-size: 16px;
+  color: var(--muted);
+  white-space: pre-wrap;
+}
+.usage-text {
+  white-space: pre-wrap;
+}
 .detail-section {
   border-top: 1px solid var(--line);
   padding-top: 20px;

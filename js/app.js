@@ -12,12 +12,14 @@ import { search } from "./search.js";
 import { parseBackup, previewImport, MAX_BYTES } from "./backup.js";
 import { makePrompt, parseAI } from "./ai.js";
 import { el, button, toast, copy } from "./ui.js";
+import { formatUsage } from "./text.js";
 const $ = (s) => document.querySelector(s),
   form = $("#entry-form"),
   editor = $("#editor"),
   aux = $("#aux");
 const types = { word: "單字", phrase: "片語", pattern: "句型" };
 const aiLabels = {
+  phonetic: "音標（IPA）",
   partOfSpeech: "詞性",
   translations: "中文翻譯",
   definition: "英文定義",
@@ -26,7 +28,6 @@ const aiLabels = {
   academicExamples: "學術例句",
   synonyms: "同義詞比較",
   sections: "適用章節",
-  tags: "標籤",
 };
 let entries = [],
   selected = null,
@@ -37,10 +38,10 @@ let entries = [],
   theme,
   themePreference;
 const fields = [
+  "phonetic",
   "word",
   "type",
   "translations",
-  "tags",
   "originalContext",
   "partOfSpeech",
   "definition",
@@ -163,11 +164,17 @@ function readRows(kind) {
 }
 function readForm() {
   const v = { ...editing };
-  for (const k of ["word", "type", "definition", "usage", "originalContext"])
+  for (const k of [
+    "word",
+    "type",
+    "phonetic",
+    "definition",
+    "usage",
+    "originalContext",
+  ])
     v[k] = field(k).value;
   v.translations = lines(field("translations").value);
   v.partOfSpeech = comma(field("partOfSpeech").value);
-  v.tags = comma(field("tags").value);
   v.sections = [...form.querySelectorAll("[name=sections]:checked")].map(
     (x) => x.value,
   );
@@ -249,7 +256,6 @@ function filters() {
   return {
     q: $("#search").value,
     type: $("#type").value,
-    tag: $("#tag").value,
     section: $("#section").value,
     favorite: $("#favorite").checked,
     sort: $("#sort").value,
@@ -258,12 +264,6 @@ function filters() {
 function render() {
   if (!selected)
     document.querySelector(".workspace").classList.remove("show-detail");
-  const current = $("#tag").value;
-  $("#tag").replaceChildren(new Option("全部標籤", ""));
-  [...new Set(entries.flatMap((e) => e.tags))]
-    .sort()
-    .forEach((t) => $("#tag").append(new Option(t, t)));
-  $("#tag").value = current;
   const result = search(entries, filters());
   $("#count").textContent = `${result.length} / ${entries.length} 筆`;
   const list = $("#list");
@@ -283,10 +283,7 @@ function render() {
     content.append(
       el("span", e.word, "entry-word"),
       el("small", e.translations.join("、") || "尚未補上中文意思"),
-      el(
-        "small",
-        `${types[e.type]}${e.tags.length ? " · " + e.tags.join(" / ") : ""}`,
-      ),
+      el("small", types[e.type]),
     );
     b.append(el("span", e.favorite ? "★" : "☆", "star"), content);
     list.append(b);
@@ -363,6 +360,7 @@ function renderDetail(e) {
   if (e.translations.length)
     d.append(el("p", e.translations.join("、"), "translation"));
   if (e.definition) d.append(el("p", e.definition, "muted"));
+  if (e.phonetic) name.append(el("p", e.phonetic, "phonetic"));
   function section(title) {
     const n = el("section", undefined, "detail-section");
     n.append(el("h3", title));
@@ -380,7 +378,10 @@ function renderDetail(e) {
     );
     n.append(row);
   }
-  if (e.usage) section("基本用法 · USAGE").append(el("p", e.usage));
+  if (e.usage)
+    section("基本用法 · USAGE").append(
+      el("p", formatUsage(e.usage), "usage-text"),
+    );
   if (e.collocations.length) {
     const n = section("常見搭配 · COLLOCATIONS");
     e.collocations.forEach((x) => copyLine(n, x));
@@ -409,8 +410,8 @@ function renderDetail(e) {
       n.append(a);
     }
   }
-  const meta = section("分類與學習");
-  [...e.tags, ...e.sections].forEach((x) => meta.append(el("span", x, "pill")));
+  const meta = section("論文章節與學習");
+  e.sections.forEach((x) => meta.append(el("span", x, "pill")));
   meta.append(
     el(
       "p",
@@ -488,10 +489,10 @@ $("#search").addEventListener("input", () => {
   clearTimeout(searchTimer);
   searchTimer = setTimeout(render, 180);
 });
-for (const k of ["type", "tag", "section", "favorite", "sort"])
+for (const k of ["type", "section", "favorite", "sort"])
   $(`#${k}`).onchange = render;
 function resetFilters() {
-  for (const k of ["search", "type", "tag", "section"]) $(`#${k}`).value = "";
+  for (const k of ["search", "type", "section"]) $(`#${k}`).value = "";
   $("#favorite").checked = false;
   $("#sort").value = "created";
   render();
@@ -533,7 +534,8 @@ $("#ai-import").onclick = guard(() => {
     body = auxOpen("匯入 AI 建議"),
     area = el("textarea");
   area.setAttribute("aria-label", "貼上 AI JSON");
-  area.placeholder = "在這裡貼上 ChatGPT 回覆的 JSON";
+  area.placeholder =
+    "貼上完整 AI JSON（包含 { }）；支援 &#x20; 空白、行尾反斜線、程式碼區塊及 URL 編碼";
   const msg = el("p", "", "error"),
     preview = el("div");
   let changes;
@@ -559,7 +561,7 @@ $("#ai-import").onclick = guard(() => {
   body.append(
     el(
       "p",
-      "先比對目前內容與 AI 建議。勾選欄位後套用，最後由你確認儲存。來源與原文不會被 AI 改寫。",
+      "支援 &#x20; 等 HTML 空白編碼、行尾反斜線、程式碼區塊與 URL 編碼。請貼上完整 JSON，包含 { } 和完整陣列 [ ]。先預覽並勾選建議，再確認儲存；來源與原文不會被 AI 改寫。",
     ),
     area,
     button("驗證並預覽", () => {

@@ -10,22 +10,10 @@
       "definition": "To make something less severe.",
       "usage": "用於降低風險、影響或問題的嚴重程度。",
       "originalContext": "",
-      "partOfSpeech": [
-        "verb"
-      ],
-      "translations": [
-        "減輕",
-        "緩解"
-      ],
-      "collocations": [
-        "mitigate potential risks"
-      ],
-      "tags": [
-        "Academic Writing"
-      ],
-      "sections": [
-        "Discussion"
-      ],
+      "partOfSpeech": ["verb"],
+      "translations": ["減輕", "緩解"],
+      "collocations": ["mitigate potential risks"],
+      "sections": ["Discussion"],
       "academicExamples": [
         {
           "en": "Careful validation can mitigate the risk of data loss.",
